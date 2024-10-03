@@ -4,7 +4,7 @@ import Search from "./Search";
 import Cart from "./Cart/Cart";
 import User from "./User";
 
-export default function DesktopNavigation() {
+export default async function DesktopNavigation() {
   return (
     <div className="max-md:hidden py-5 grid grid-cols-3 items-center">
       <Link
