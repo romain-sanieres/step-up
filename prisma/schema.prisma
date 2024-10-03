@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String?
+  email          String          @unique
+  password       String?
+  emailVerified  DateTime?
+  image          String?
+  role           UserRole?       @default(USER)
+  userType       UserType        @default(CLIENT)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  accounts       Account[]
+  Authenticator  Authenticator[]
+  sessions       Session[]
+  vendor_account Vendor[]        @relation("UserVendors")
+  cart           CartItem[]
+  Commentary     Commentary[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  size      String
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime @default(now())
+}
+
+model Vendor {
+  id             String    @id @default(cuid())
+  name           String    @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  description    String
+  stripe_account String    @unique
+  userId         String?
+  products       Product[]
+  user           User?     @relation("UserVendors", fields: [userId], references: [id])
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  price        Float
+  collection   String?
+  tags         String?
+  gender       String
+  is_on_sale   Boolean       @default(false)
+  sale_price   Float?
+  limit        Int           @default(5)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  vendorId     String?
+  sku          String        @unique
+  Vendor       Vendor?       @relation(fields: [vendorId], references: [id])
+  sizes        ProductSize[]
+  reviews      Review[]
+  CartItem     CartItem[]
+  Commentaries Commentary[]
+  images       String[]
+}
+
+model Commentary {
+  id        String   @id @default(cuid())
+  name      String
+  title     String
+  comment   String
+  productId String
+  rating    Float?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  size      String
+  inventory Int
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([productId, size])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  id                String   @id @default(cuid())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  id           String   @id @default(cuid())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  id                   String  @id @default(cuid())
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, credentialID])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum UserType {
+  CLIENT
+  VENDOR
+}
