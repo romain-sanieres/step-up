@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import Commentaries from "../_components/Commentaries";
 import Image from "next/image";
+import ProductLoadingSkeleton from "../_components/Loading";
 export default function ProductId() {
   const [description, setDescription] = useState(false);
   const { id } = useParams();
@@ -25,7 +26,7 @@ export default function ProductId() {
     return date > sevenDaysAgo;
   };
 
-  if (isLoading) return <main className="min-h-[100dvh]"></main>;
+  if (isLoading) return <ProductLoadingSkeleton />;
   if (isError) return <></>;
 
 
