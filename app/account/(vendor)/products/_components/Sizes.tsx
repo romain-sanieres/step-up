@@ -6,6 +6,7 @@ import { StockType } from "@/types";
 import { useServerActionMutation } from "@/lib/hooks/server-action-hooks";
 import { createCartAction } from "@/app/zsa/cart.action";
 import { useQueryClient } from "@tanstack/react-query";
+import { LoaderCircleIcon } from "lucide-react";
 
 
 export default function Sizes({
@@ -84,8 +85,14 @@ export default function Sizes({
         className="text-lg w-full space-x-4"
         onClick={() => addToCart(reference)}
       >
-        <span>Add to cart</span>
-        <span>${price?.toFixed(2)}</span>
+        {isPending ? (
+          <LoaderCircleIcon className="animate-spin" />
+        ) : (
+          <>
+            <span>Add to cart</span>
+            <span>${price?.toFixed(2)}</span>
+          </>
+        )}
       </Button>
     </>
   );

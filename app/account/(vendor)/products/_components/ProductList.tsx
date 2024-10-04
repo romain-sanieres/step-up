@@ -25,7 +25,8 @@ export default function ProductList({ search }: { search: string }) {
   });
 
   if (isError) return <></>;
-  if (isLoading) return <></>;
+  if (isLoading) return <>loading...</>;
+  
   if (Array.isArray(data))
     return (
       <section className="mt-5">
