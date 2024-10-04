@@ -1,5 +1,4 @@
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/Navigation/Navigation";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,17 +13,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactQueryProvider>
         <body>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Navigation />
-            {children}
-            <Toaster />
-            <Footer />
-          </ThemeProvider>
+          <Navigation />
+          {children}
+          <Toaster />
+          <Footer />
         </body>
       </ReactQueryProvider>
     </html>
